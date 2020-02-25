@@ -1,6 +1,7 @@
 import platform
 import requests
 import socket
+import nmap
 
 def get_machine_info():
     data = dict()
@@ -12,20 +13,23 @@ def get_machine_info():
     data['processor'] = platform.processor()
     return data
 
-def get_localhost_info():
-    data = dict()
-    list_port = list()
-    data['ip'] = requests.get('https://api.ipify.org').text
+def scan_host_manually(ip, port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        for port in range(1, 1025):
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            result = sock.connect_ex((data['ip'], port))
-            if result == 0:
-                list_port.append(port)
-            sock.close()
-    except socket.error:
-        print("Couldn't connect to server")
+        code = sock.connect_ex((ip, port))
+        if code == 0:
+            return True
+        else:
+            return False
+    except:
+        return False
     finally:
-        data['ports'] = list_port
-    return data 
+        sock.close()
 
+def nmap_scan_host(host, ports):
+
+    nm = nmap.PortScanner()
+    flag = ' '
+    ports = flag.join(ports)
+    nm.scan(host, arguments='-n -sP -PE -PA{}'.format(ports))
+    print(nm.all_hosts())
