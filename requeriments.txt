@@ -1,3 +1,4 @@
 publicip
-python-nmap
+python-nmap3
+simplejson
 
