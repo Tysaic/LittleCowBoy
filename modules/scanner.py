@@ -1,6 +1,7 @@
 import platform
 import socket
 import nmap3
+import re
 
 class Scanner:
     """
@@ -94,6 +95,11 @@ class Scanner:
             data["port"] = b["port"]
             data["protocol"] = b["protocol"]
             data["state"] = b["state"]
-            list_data.append(data)
+            list_data.append(data.copy())
+        number_or_dns_host = re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", self.host)
+        #DNS DETECTION
+        if number_or_dns_host:
+            print(True)
+        else:
+            print(False)
         return list_data
-        

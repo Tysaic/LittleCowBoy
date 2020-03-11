@@ -2,9 +2,10 @@ from modules.scanner import *
 
 list_ports = ('80', '22')
 if __name__ == '__main__':
-    ip = '127.0.0.1'
+    host = '127.0.0.1'
+    #host = 'google.com'
     port = 80
-    scan = Scanner(ip, port)
+    scan = Scanner(host, port)
 #    print("Machine Info: ", Scanner.get_machine_info())
     """
     print(scan.scan_host_manually() )
