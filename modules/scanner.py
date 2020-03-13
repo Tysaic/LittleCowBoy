@@ -63,7 +63,7 @@ class Scanner:
         """
         Scanning dns host, return where the host is.
         """
-        results = self.nm.nmap_dns_brute_script(self.host)
+        results = self.nm.nmap_dns_brute_script(self.host, dns_brute='--script dns-brute')
         return results
 
     def os_detection_nmap_scan(self):
@@ -83,23 +83,36 @@ class Scanner:
         """
         Return Scanning techniques
         """
-        return self.nm_scan_tech.nmap_fin_scan(self.host)
+        result = nmap3.NmapScanTechniques().nmap_fin_scan(self.host)
+        return result
 
-    def printing_info(self):
+    def _getting_basic_info(self):
         basic_nmap = self.basic_nmap_scan()
-        list_data = list()
+        basic_data = list()
         data = dict()
-        list_data.append({'os':self.os_detection_nmap_scan()[0]["name"]})
+        for s in self.os_detection_nmap_scan():
+            basic_data.append({'os': s["name"]})
         for b in basic_nmap:
             data["name"] = b["service"]["name"]
             data["port"] = b["port"]
             data["protocol"] = b["protocol"]
             data["state"] = b["state"]
-            list_data.append(data.copy())
+            basic_data.append(data.copy())
         number_or_dns_host = re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", self.host)
-        #DNS DETECTION
-        if number_or_dns_host:
-            print(True)
+        data_dns = dict()
+        if not number_or_dns_host:
+            data_dns = self.dns_nmap_scan()
         else:
-            print(False)
-        return list_data
+            print("NOT DNS IN HOSTNAME, IF YOU WANT MORE INFO TYPE DOMAIN NAME EXAMPLE: host = 'example.com' BECAUSE THE CURRENT HOST IS DEFINE AS IP : x.x.x.x")
+        return basic_data, data_dns
+    
+    def printing_basic_info(self):
+        data_ports, data_dns = self._getting_basic_info()
+
+        for data in data_ports:
+            print(data)
+
+        for dns in data_dns:
+            print(dns)
+
+    #JUST LACK CONTINUE WITH SUBNET SCANNING
